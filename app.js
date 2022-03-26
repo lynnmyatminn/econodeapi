@@ -4,6 +4,8 @@ const app = express();
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const authJwt = require('./helpers/jwt');
+const errorHandler = require('./helpers/errorHandler');
 
 app.use(cors());
 app.use('*', cors());
@@ -18,6 +20,9 @@ const usersRouter = require('./routers/user');
 //middleware
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(authJwt());
+//error handler
+app.use(errorHandler)
 
 //Routers
 app.use(`${api}/products`, productsRouter);
