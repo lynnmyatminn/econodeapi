@@ -6,8 +6,9 @@ function authJwt() {
     console.log(secret);
     return jwt({
         secret: secret,
-        algorithms: ['HS256']
-    }).unless({//exclude paths without user authentication
+        algorithms: ['HS256'],
+        isRevoked: isRevoked
+    }).unless({//exclude api requests without user authentication
         path: [
             {
                 //regular expression usage
@@ -20,6 +21,13 @@ function authJwt() {
             '/api/v1/users/register',
         ]
     })
+}
+
+async function isRevoked(req, payload, done) {
+    if (!payload.isAdmin) {
+        done(null, true);
+    }
+    done();
 }
 
 module.exports = authJwt;
