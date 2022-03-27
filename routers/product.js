@@ -13,6 +13,22 @@ router.get(`/`, async (req, res, next) => {
     res.send(productList)
 });
 
+router.get(`/get/count`, async (req, res) => {
+    const productCount = await Product.countDocuments((count) => count)
+    if (!productCount) {
+        res.status(500).json(
+            {
+                success: false
+            }
+        )
+    }
+    res.send(
+        {
+            productCount: productCount
+        }
+    );
+});
+
 router.post(`/`, (req, res) => {
     const product = new Product({
         name: req.body.name,
@@ -34,6 +50,21 @@ router.post(`/`, (req, res) => {
         res.status(500).json({
             error: err,
             success: false
+        })
+    })
+});
+
+router.delete(`/:id`, (req, res) => {
+    Product.findByIdAndRemove(req.params.id).then(product => {
+        if (product) {
+            return res.status(200).json({ success: true, message: "the product has been deleted successfully." })
+        } else {
+            return res.status(404).json({ success: false, message: 'the product cannot be found' })
+        }
+    }).catch(err => {
+        return res.status(500).json({
+            success: false,
+            error: err
         })
     })
 });
